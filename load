@@ -7,7 +7,7 @@ if [ -z "$csgo_pid" ]; then
 fi
 
 if [ ! -d ".git" ]; then
-    /bin/echo "We have detected that you have downloaded aimtux-master.zip from the GitHub website. This is the WRONG way to download AimTux. Please download AimTux with the command 'git clone --recursive https://github.com/AimTuxOfficial/AimTux'"
+    /bin/echo "We have detected that you have downloaded aimtux-master.zip from the GitHub website. This is the WRONG way to download AimTux. Please download AimTux with the command 'git clone --recursive https://github.com/moofMonkey/AimTux'"
 fi
 
 #Credit: Aixxe @ aixxe.net
