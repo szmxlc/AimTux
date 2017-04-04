@@ -93,33 +93,14 @@ void DoAntiAimY(QAngle& angle, int command_number, bool bFlip, bool& clamp)
 	yFlip = bFlip != yFlip;
 
 	switch (aa_type)
-	{	
-		case AntiAimType_Y::SPIN_SLOW:
-			factor =  360.0 / M_PHI;
-			angle.y = fmodf(globalVars->curtime * factor, 360.0);
-			break;
+	{
 		case AntiAimType_Y::SPIN_FAST:
 			factor =  360.0 / M_PHI;
 			factor *= 25;
 			angle.y = fmodf(globalVars->curtime * factor, 360.0);
 			break;
-		case AntiAimType_Y::SPIN_REVERSE:
-			factor  = 360.0 / M_PHI;
-			factor *= -25;
-			angle.y = fmodf(globalVars->curtime * factor, 360.0);
-			break;
-		case AntiAimType_Y::SPIN_TURBO:
+		case AntiAimType_Y::SPIN_SLOW:
 			factor =  360.0 / M_PHI;
-			factor *= 43.26;
-			angle.y = fmodf(globalVars->curtime * factor, 360.0);
-			break;	
-		case AntiAimType_Y::SPIN_RANDOM:
-			factor =  360.0 / M_PHI;
-			random = rand() % 100;			
-			if (random < 15)
-			random += rand() % 15;
-			else
-			factor *= random;
 			angle.y = fmodf(globalVars->curtime * factor, 360.0);
 			break;
 		case AntiAimType_Y::JITTER:
@@ -166,10 +147,6 @@ void DoAntiAimY(QAngle& angle, int command_number, bool bFlip, bool& clamp)
 
 			if (trigger > 100.0f)
 				trigger = 0.0f;
-			break;
-		case AntiAimType_Y::TERROR_ANGEL:
-			clamp = false;
-			yFlip ? angle.y += 36000180.0f : angle.y -= 36000180.0f;
 			break;
 		case AntiAimType_Y::LISP:
 			clamp = false;
@@ -239,9 +216,6 @@ void DoAntiAimX(QAngle& angle, bool bFlip, bool& clamp)
 		case AntiAimType_X::STATIC_DOWN:
 			angle.x = 89.0f;
 			break;
-		case AntiAimType_X::SWITCH_UPDOWN:
-			angle.x = bFlip ? 89.0f : -89.0f;
-			break;
 		case AntiAimType_X::DANCE:
 			pDance += 45.0f;
 			if (pDance > 100)
@@ -255,15 +229,10 @@ void DoAntiAimX(QAngle& angle, bool bFlip, bool& clamp)
 			angle.x = 0.0f;
 			break;
 		case AntiAimType_X::STATIC_UP_FAKE:
-			clamp = false;
-			angle.x = -180.0f;
+			angle.x = bFlip ? 89.0f : -89.0f;
 			break;
 		case AntiAimType_X::STATIC_DOWN_FAKE:
-			clamp = false;
-			angle.x = 180.0f;
-			break;
-		case AntiAimType_X::FAKE_SWITCH:
-			angle.x = bFlip ? -180.0f : 180.0f;
+			angle.x = bFlip ? -89.0f : 89.0f;
 			break;
 		case AntiAimType_X::LISP_DOWN:
 			clamp = false;
@@ -322,7 +291,6 @@ void AntiAim::CreateMove(CUserCmd* cmd)
 	// AutoDisable checks
 
 	// Knife
-
 	if (Settings::AntiAim::AutoDisable::knifeHeld && localplayer->GetAlive() && activeWeapon->GetCSWpnData()->GetWeaponType() == CSWeaponType::WEAPONTYPE_KNIFE)
 		return;
 
@@ -340,15 +308,15 @@ void AntiAim::CreateMove(CUserCmd* cmd)
 
 	if (!ValveDSCheck::forceUT && (*csGameRules) && (*csGameRules)->IsValveDS())
 	{
-		if (Settings::AntiAim::Yaw::type >= AntiAimType_Y::TERROR_ANGEL)
+		if (Settings::AntiAim::Yaw::type >= AntiAimType_Y::LISP)
 			Settings::AntiAim::Yaw::type = AntiAimType_Y::SPIN_SLOW;
 
-		if (Settings::AntiAim::Yaw::typeFake >= AntiAimType_Y::TERROR_ANGEL)
+		if (Settings::AntiAim::Yaw::typeFake >= AntiAimType_Y::LISP)
 			Settings::AntiAim::Yaw::typeFake = AntiAimType_Y::SPIN_SLOW;
 
 		if (Settings::AntiAim::Pitch::type >= AntiAimType_X::STATIC_UP_FAKE)
 			Settings::AntiAim::Pitch::type = AntiAimType_X::STATIC_UP;
-	}	
+	}
 
 	if (Settings::AntiAim::Yaw::enabled)
 	{
